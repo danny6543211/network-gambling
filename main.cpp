@@ -5,7 +5,8 @@
 #include <iostream>
 #include <algorithm>
 #include <unordered_set>
-#include <windows.h>
+#include <fstream>
+#include <string>
 
 const int COOPERATE = 1;
 const int BETRAY    = 0;
@@ -59,7 +60,7 @@ public:
         }
     }
 
-    double rationality_density() {
+    double cooperation_density() {
         double sum = 0;
         for (auto i : nodes)
             sum += i.data.strategy;
@@ -197,23 +198,31 @@ private:
         }
         else {
             // 被背叛收益为0，背叛成功收益自定
-            if (nodes[i].data.strategy == BETRAY)
-                payoff[i] += factor.betray_ok_payoff; 
-            else
-                payoff[j] += factor.betray_ok_payoff;
+            if (nodes[i].data.strategy == BETRAY) {
+                payoff[i] += 1 + factor.betray_ok_payoff; 
+                payoff[j] += 1 - factor.betray_ok_payoff;
+            }
+            else {
+                payoff[j] += 1 + factor.betray_ok_payoff; 
+                payoff[i] += 1 - factor.betray_ok_payoff;
+            }
         }
     }
 
 
 };
 
+
+
+
 int main() {
-    
-    for (double b = 0.9; b < 1.1; b += 0.005) {
-        network x(30, b, 1);
-        x.gambling(100);
-        std::cout << "b: " << b;  std::cout << "   total: " << x.total_revenue() << "\n";
-        std::cout << "density of rationality: " << x.rationality_density() << "\n";
+    std::ofstream file("data.csv", std::ios::out);
+
+    for (double r = 0; r < 1; r += 0.01) {
+        network x(30, r, 1);
+        x.gambling(120);
+        file << x.cooperation_density() << ",";        
     }
+    file << "\r\n";
 
 }
