@@ -8,8 +8,11 @@
 #include <fstream>
 #include <string>
 
-const int COOPERATE = 1;
 const int BETRAY    = 0;
+const int COOPERATE = 1;
+const int TFT       = 2;
+
+const int STRATEGY_COUNT = 2;
 
 std::mt19937 mt(time(NULL));  
 std::uniform_int_distribution<int> dist(0, 100); 
@@ -24,6 +27,7 @@ struct node {
     struct {
         double payoff = 0;
         int strategy  = -1;
+        double this_tern_payoff = 0;
     } data;
 
     node(int strategy) { data.strategy = strategy; }
@@ -41,16 +45,17 @@ public:
         double betray_ok_payoff = 0;
         double rationality = 0;
     } factor;
+    size_t init_node_count = 2;
 
-    network(size_t init_node_count, double betray_ok_payoff, double rationality) {
+    network(size_t init_node_count, double betray_ok_payoff) {
         factor.betray_ok_payoff = betray_ok_payoff;
-        factor.rationality = rationality;
         for (size_t i = 0; i < init_node_count; i++) {
             add_node();
         }   
         init_node_connect(); 
     }
 
+    // 把边加node边迭代
     void gambling(size_t iterate_count) {
         for (size_t i = 0; i < iterate_count; i++) {
             add_node();
@@ -59,6 +64,21 @@ public:
             opitimize();
         }
     }
+
+    void init(size_t init_node_count) {
+        for (size_t i = 0; i < init_node_count; i++) {
+            add_node();
+            new_node_connect();
+        }
+    }    
+
+    void run(size_t iterate_count) {
+        for (size_t i = 0; i < iterate_count; i++) {
+            caculate();
+            opitimize();
+        }
+    }
+
 
     double cooperation_density() {
         double sum = 0;
@@ -85,7 +105,7 @@ private:
 
     // 网络添加节点
     void add_node() {
-        nodes.push_back(node(get_random() % 2));
+        nodes.push_back(node(get_random() % STRATEGY_COUNT));
     }
 
     // 初始化网络节点
@@ -138,7 +158,10 @@ private:
         }
         // 更新收益
         for (size_t i = 0; i < nodes.size(); i++) {
+            // 总收益
             nodes[i].data.payoff += this_tern_payoff[i];
+            // 记录本回合收益
+            nodes[i].data.this_tern_payoff = this_tern_payoff[i];
         }
     }
 
@@ -174,7 +197,7 @@ private:
             if (nodes[i].data.strategy == nodes[i].neighbors[find]->data.strategy)
                 continue;
             // find为要学习的节点的下标，计算是否学习
-            double p = 1 / (1 + exp((nodes[i].data.payoff - nodes[i].neighbors[find]->data.payoff) / 0.01));
+            double p = 1 / (1 + exp((nodes[i].data.this_tern_payoff - nodes[i].neighbors[find]->data.this_tern_payoff) / 0.01));
             rand = get_random() / (double) 100;
             if (p > rand)
                 this_tern_strategy[i] = nodes[i].neighbors[find]->data.strategy;
@@ -217,12 +240,17 @@ private:
 
 int main() {
     std::ofstream file("data.csv", std::ios::out);
+    const size_t iteration_count = 200;
+    const size_t init_node_count = 2;   
 
-    for (double r = 0; r < 1; r += 0.01) {
-        network x(30, r, 1);
-        x.gambling(120);
-        file << x.cooperation_density() << ",";        
+    file << "cooperation density,total revenue\n";
+    
+    for (double r = 0; r < 1; r += 0.05) {
+        network x(init_node_count, r);
+        x.init(198);
+        x.run(100);
+        file << x.cooperation_density() << "," << x.total_revenue() << "\n";
     }
-    file << "\r\n";
-
+    
+    file.close();
 }
