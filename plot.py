@@ -4,36 +4,22 @@ import numpy as np
 
 
 if __name__ == "__main__":
-    reader = csv.reader(open("data.csv"))
-    title = next(reader)
+    reader = csv.reader(open("test.csv"))
 
-    # x
-    x = [np.arange(0, 1, 0.05)]
-    # y (str类型)
-    __cooperation_desity = []
-    __total_revenue = []
-
-    # load y
+    # str y
+    __y = []
     for row in reader:
-        __cooperation_desity.append(row[0])
-        __total_revenue.append(row[1])
+        __y.append(row[0])
+    # int y
+    _y = [int(i) for i in __y]
 
-    # y (double类型)
-    cooperation_desity = [float(x) for x in __cooperation_desity]
-    total_revenue = [float(x) for x in __total_revenue]
+    x = (np.arange(0, max(_y)+1, 1))
 
-    plt.figure(figsize=(10, 8))
+    y = [0 for i in range(x.size)]
+    for i in _y:
+        y[i-1] += 1
 
-    plt.subplot(2, 1, 1)
-    plt.xlabel("r")
-    plt.ylabel("cooperation desity")
-    plt.scatter(x, cooperation_desity)
-    # plt.title("cooperation desity / r")
+    print(y)
 
-    plt.subplot(2, 1, 2)
-    plt.xlabel("cooperation desity")
-    plt.ylabel("total revenue")
-    plt.scatter(cooperation_desity, total_revenue)
-    # plt.title("cooperation desity / total revenue")
-
+    plt.scatter(x, y)
     plt.show()
