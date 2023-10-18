@@ -22,6 +22,8 @@ struct __edge {
 template<class DataType>
 struct __network__base
 {
+    typedef __node<DataType> node;
+
     std::deque<__node<DataType>> nodes;
     std::vector<__edge> edges;
 

@@ -16,6 +16,8 @@ struct __node {
         x->neighbors.push_back(this);
     } 
     
+    bool operator==(const __node& x) { return this == &x; }
+
     size_t degrees() {
         return neighbors.size();
     }

@@ -1,1 +1,0 @@
-g++ main.cpp -Iinclude -Inetwork -o main.exe

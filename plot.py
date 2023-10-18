@@ -4,7 +4,7 @@ import numpy as np
 
 
 if __name__ == "__main__":
-    reader = csv.reader(open("test.csv"))
+    reader = csv.reader(open("data.csv"))
 
     # str y
     __y = []
