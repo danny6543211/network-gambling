@@ -11,10 +11,6 @@
 // 新节点加进来连接多少边
 #define NEW_NODE_EDGE_COUNT 1
 
-// #define BETRAY_STRATEGY     0
-// #define COOPERATE_STRATEGY  1
-// #define TFT_STRATEGY        2
-
 enum class strategy {BETRAY, COOPERATE, TFT};
 enum class behavior {BETRAY, COOPERATE};
 strategy rand_strategy() { 
