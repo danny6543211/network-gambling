@@ -28,6 +28,8 @@ struct TFT_data_type {
 };
 
 struct scale_free_network : public __network__base<TFT_data_type> {
+
+    scale_free_network() {}
     scale_free_network(size_t network_node_count) {
         construct_network(network_node_count);
         init_network();
@@ -116,19 +118,6 @@ struct scale_free_network : public __network__base<TFT_data_type> {
                 continue;
             nodes[i].data.strategy = (strategy) this_tern_strategy[i];
         }
-    }
-
-    void export_node_status(std::string file_path) {
-        std::ofstream file(file_path, std::ios::out);
-        
-        file << "degrees,strategy,payoff" << "\n";
-        for (auto node : nodes) {
-            file << node.degrees() << ",";
-            file << (int) node.data.strategy << ",";
-            file << node.data.payoff << "\n";
-        } 
-
-        file.close();
     }
 
 private:
