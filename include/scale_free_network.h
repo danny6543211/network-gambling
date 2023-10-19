@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include <algorithm>
-#include "network.h"
+#include "network_base.h"
 
 // 新节点加进来连接多少边
 #define NEW_NODE_EDGE_COUNT 1
@@ -201,8 +201,6 @@ private:
         }
     }
 };
-
-
 
 
 #endif

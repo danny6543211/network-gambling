@@ -3,8 +3,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "scale_free_network.h"
-
+#include "./include/scale_free_network.h"
 
 int main() {
 

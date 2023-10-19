@@ -1,5 +1,5 @@
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef NETWORK_BASE_H
+#define NETWORK_BASE_H
 
 #include <deque>
 #include "rand.h"
