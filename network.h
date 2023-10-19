@@ -2,41 +2,49 @@
 #define NETWORK_H
 
 #include <deque>
-#include "node.h"
 #include "rand.h"
 
-struct __edge {
-    unsigned int source;
-    unsigned int target;
+typedef size_t ID;
 
-    __edge(unsigned int source, unsigned int target) 
-    : source(source), target(target) {}
+template<class DataType>
+struct __node {
+    std::vector<ID> neighbors;
+    DataType data;
 
-    bool has(unsigned int x) {
-        if (source == x || target == x)
-            return true;
-        return false;
+    size_t degrees() {
+        return neighbors.size();
     }
+};
+
+struct __edge {
+    ID source;
+    ID target;
+
+    __edge(ID source, ID target) 
+    : source(source), target(target) {}
 };
 
 template<class DataType>
 struct __network__base
 {
-    typedef __node<DataType> node;
+    typedef __node<DataType>   node;
+    typedef __edge             edge;
 
-    std::deque<__node<DataType>> nodes;
-    std::vector<__edge> edges;
 
-    size_t degrees_sum() {
+    std::vector<node> nodes;
+    std::vector<edge> edges;
+
+    size_t network_degrees_sum() {
         size_t sum = 0;
         for (auto node : nodes)
             sum += node.neighbors.size();
         return sum;
     }
 
-    void connect(size_t i, size_t j) {
-        nodes[i].connect(&nodes[j]);
-        edges.push_back(__edge(i, j));
+    void connect(ID x, ID y) {
+        nodes[x].neighbors.push_back(y);
+        nodes[y].neighbors.push_back(x);
+        edges.push_back(edge(x, y));
     }
 };
 
