@@ -8,7 +8,7 @@
 
 std::mt19937 mt(time(NULL));  
 std::uniform_int_distribution<int> dist(0, INT_MAX); 
-// 均匀取0~99随机数 
+
 inline size_t get_rand_int() {
     return dist(mt);
 }

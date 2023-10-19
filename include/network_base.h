@@ -6,10 +6,10 @@
 
 typedef size_t ID;
 
-template<class DataType>
+template<class NodeDataType>
 struct __node {
     std::vector<ID> neighbors;
-    DataType data;
+    NodeDataType data;
 
     size_t degrees() {
         return neighbors.size();
@@ -24,11 +24,11 @@ struct __edge {
     : source(source), target(target) {}
 };
 
-template<class DataType>
+template<class NodeDataType>
 struct __network__base
 {
-    typedef __node<DataType>   node;
-    typedef __edge             edge;
+    typedef __node<NodeDataType>   node;
+    typedef __edge                 edge;
 
 
     std::vector<node> nodes;
