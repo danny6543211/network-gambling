@@ -1,7 +1,9 @@
 #include <iostream>
-#include "network_base.hpp"
-
+#include "BA_network.hpp"
 
 int main() {
-    std::cout << "hello world\n";
+    __BA_network<int> a(10, 1);
+
+    std::cout << a.degree_of_network();   
+    
 }

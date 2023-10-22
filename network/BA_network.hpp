@@ -1,27 +1,29 @@
 #ifndef BA_NETWORK_HPP
 #define BA_NETWORK_HPP
 
+#include <vector>
 #include "network_base.hpp"
+#include "rand.h"
 
 template<class NodeDataType>
 struct __BA_network : public __network__base<NodeDataType> {
-    typedef typename __network__base<NodeDataType>::node node;
-    typedef typename __network__base<NodeDataType>::edge edge;
+    using node = typename __network__base<NodeDataType>::node;
+    using edge = typename __network__base<NodeDataType>::edge;
 
     __BA_network(size_t network_node_count, size_t new_node_edge_count) {
-        this->nodes.push_back(node());
-        this->nodes.push_back(node());
+        this->add_node();
+        this->add_node();
         this->connect(0, 1);
         
         for (size_t node_index = 2; node_index < network_node_count; node_index++) {
             for (size_t i = 0; i < new_node_edge_count; i++) {
-                this->nodes.push_back(node());
+                this->add_node();
                 size_t new_node_index = node_index;
                 std::vector<double> degrees_table;
                 for (size_t j = 0; j < new_node_index; j++) 
-                    degrees_table.push_back(this->nodes[j].degrees() / (double) this->network_degrees_sum());
+                    degrees_table.push_back(this->nodes[j].degree() / (double) this->degree_of_network());
 
-                double rand = get_rand();
+                double rand = get_rand_p();
 
                 size_t connected_node_index = 0;
                 for (auto j : degrees_table) {
