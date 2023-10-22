@@ -1,7 +1,7 @@
 #ifndef STRATEGY_HPP
 #define STRATEGY_HPP
 
-#include "rand.h"
+#include "rand.hpp"
 
 enum class strategy {
     BETRAY, COOPERATE, TFT

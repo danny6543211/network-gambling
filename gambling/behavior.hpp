@@ -1,7 +1,7 @@
 #ifndef BEHAVIOR_HPP
 #define BEHAVIOR_HPP
 
-#include "rand.h"
+#include "rand.hpp"
 
 enum class behavior {
     BETRAY, COOPERATE

@@ -3,7 +3,7 @@
 
 #include <vector>
 #include "network_base.hpp"
-#include "rand.h"
+#include "rand.hpp"
 
 template<class NodeDataType>
 struct __BA_network : public __network__base<NodeDataType> {
