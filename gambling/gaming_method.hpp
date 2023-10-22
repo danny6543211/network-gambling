@@ -3,7 +3,7 @@
 
 #include "behavior.hpp"
 
-enum class gaming_method {
+enum class gaming_method_type {
     snowdrift_dilemma, prisoners_dilemma
 };
 
@@ -52,10 +52,10 @@ inline void prisoners_dilemma(behavior x_behavior, behavior y_behavior,
 }
 
 void battle(behavior x_behavior, behavior y_behavior, 
-    double& x_payoff, double& y_payoff, double r, gaming_method method) {
-        if (method == gaming_method::snowdrift_dilemma)
+    double& x_payoff, double& y_payoff, double r, gaming_method_type method) {
+        if (method == gaming_method_type::snowdrift_dilemma)
             snowdrift_dilemma(x_behavior, y_behavior, x_payoff, y_payoff, r);
-        else if (method == gaming_method::prisoners_dilemma)
+        else if (method == gaming_method_type::prisoners_dilemma)
             prisoners_dilemma(x_behavior, y_behavior, x_payoff, y_payoff, r);
         else
             throw "Method is not impletment";

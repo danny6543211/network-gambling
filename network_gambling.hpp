@@ -1,11 +1,11 @@
 #include <unordered_map>
 #include <memory>
 
-#include "rand.hpp"
 #include "BA_network.hpp"
-#include "behavior.hpp"
 #include "strategy.hpp"
+#include "behavior.hpp"
 #include "gaming_method.hpp"
+#include "rand.hpp"
 
 struct node_data {
     using ID = unsigned int;
@@ -16,83 +16,56 @@ struct node_data {
     std::unordered_map<ID, behavior> neighbors_impression;
 };
 
-class gambling {
+class network_gambling {
 public:
-    typedef __BA_network<node_data> scale_free_network;
-    using ID = unsigned int;
-
-    std::unique_ptr<scale_free_network> network;
+    using network_type = __BA_network<node_data>;
+    using ID           = unsigned int;
+    
 private:
-    gaming_method_type game_type = gaming_method_type::snowdrift_dilemma;
-    size_t network_size = 100;
-    size_t new_node_edge_count = 1;
+    std::unique_ptr<network_type> network;
+    
+    gaming_method_type gaming_method    = gaming_method_type::snowdrift_dilemma;
+    size_t network_size                 = 200;
+    size_t new_node_edge_count          = 1;
     size_t one_iteration_caculate_count = 5;
-    double r = 0;
+    double r = 0; 
 
 public:
-    gambling() {}
+    network_gambling() {
+        build_network();
+    }
 
-    void set_r(double r) { this->r = r; }
-    void reset() { network = nullptr; }
+    network_gambling(gaming_method_type gaming_method, size_t network_size, 
+    size_t new_node_edge_count, size_t one_iteration_caculate_count, double r) 
+    : 
+    gaming_method(gaming_method), 
+    network_size(network_size), 
+    new_node_edge_count(new_node_edge_count), 
+    one_iteration_caculate_count(one_iteration_caculate_count), 
+    r(r) {
+        build_network();
+    }
 
     void iterate() {
-        if (network == nullptr)
-            build();
         for (size_t i = 0; i < one_iteration_caculate_count; i++)
             caculate();
         optimize();
     }
 
-    double payoff() {
-        double sum = 0;
-        for (auto &node : network->nodes)
-            sum += node.data.payoff;
-        return sum;
-    }
-
-    size_t C_count() {
-        size_t sum = 0;
-        for (auto &node : network->nodes) {
-            if (node.data.strategy == strategy::COOPERATE)
-                sum++;
-        }
-        return sum;
-    }
-
-    size_t B_count() {
-        size_t sum = 0;
-        for (auto &node : network->nodes) {
-            if (node.data.strategy == strategy::BETRAY)
-                sum++;
-        }
-        return sum;
-    }
-
-    size_t T_count() {
-        size_t sum = 0;
-        for (auto const &node : network->nodes) {
-            if (node.data.strategy == strategy::TFT)
-                sum++;
-        }
-        return sum;
-    }
-
 private:
-    void build() {
-        network = nullptr;
-        network = std::make_unique<scale_free_network>(network_size, new_node_edge_count);
+    void build_network() {
+        network = std::make_unique<network_type>(network_size, new_node_edge_count);
         for (auto &node : network->nodes) {
             // 网络初始化为对自己随机策略，对邻居随机印象
             node.data.strategy = get_rand_strategy();
-            for (size_t j = 0; j < node.neighbors.size(); j++) {
-                node.data.neighbors_impression[node.neighbors[j]] = get_rand_behavior();
-            }
+            for (auto &neighbor : node.neighbors) 
+                node.data.neighbors_impression[neighbor] = get_rand_behavior();
         }
     }
 
     void caculate() {
         std::vector<double> this_tern_payoff(network->nodes.size(), 0);
-        for (auto edge : network->edges) {
+        for (auto const &edge : network->edges) {
             ID x = edge.source;
             ID y = edge.target;
             behavior x_behavior;
@@ -122,16 +95,13 @@ private:
                 }
             }
 
-            if (game_type == gaming_method_type::snowdrift_dilemma)
-                snowdrift_battle(x, x_behavior, y, y_behavior, this_tern_payoff, r);
-            else if (game_type == gaming_method_type::prisoners_dilemma)
-                prisoners_battle(x, x_behavior, y, y_behavior, this_tern_payoff, r);            
+            battle(x_behavior, y_behavior, this_tern_payoff[x], this_tern_payoff[y], r, gaming_method);
         }
     
         // 更新收益
         for (size_t i = 0; i < this_tern_payoff.size(); i++) {
             network->nodes[i].data.this_tern_payoff = this_tern_payoff[i];
-            network->nodes[i].data.payoff += network->nodes[i].data.this_tern_payoff;
+            network->nodes[i].data.payoff += this_tern_payoff[i];
         }
     }
 
@@ -177,62 +147,9 @@ private:
                 continue;
             network->nodes[i].data.strategy = (strategy) this_tern_strategy[i];
         }
+        // 本回收益归零
+        for (auto &node : network->nodes) 
+            node.data.this_tern_payoff = 0;       
     }
-
-    void battle(ID x, behavior x_behavior, ID y, behavior y_behavior, 
-    std::vector<double>& payoff, double r, gaming_method_type gambling_method) {
-
-    }
-
-    void snowdrift_battle(ID x, behavior x_behavior, ID y, behavior y_behavior, 
-    std::vector<double>& payoff, double r) {
-        if (x_behavior == y_behavior) {
-            // ALL COOPERATE
-            if (x_behavior == behavior::COOPERATE) {
-                payoff[x] += 1;
-                payoff[y] += 1;
-            }
-            // All BETRAY
-            else 
-                ;
-        }
-        else {
-            // x: COOPERATE   y: BETRAY
-            if (x_behavior == behavior::COOPERATE) {
-                payoff[x] += 1 - r;
-                payoff[y] += 1 + r;
-            }
-            // x: BETRAY   y: COOPERATE
-            else {
-                payoff[x] += 1 + r;
-                payoff[y] += 1 - r;
-            }
-        }
-    }
-
-    void prisoners_battle(ID x, behavior x_behavior, ID y, behavior y_behavior, 
-    std::vector<double>& payoff, double r) {
-        if (x_behavior == y_behavior) {
-            // ALL COOPERATE
-            if (x_behavior == behavior::COOPERATE) {
-                payoff[x] += 1;
-                payoff[y] += 1;
-            }
-            // All BETRAY
-            else 
-                ;
-        }
-        else {
-            // x: COOPERATE   y: BETRAY
-            if (x_behavior == behavior::COOPERATE) {
-                payoff[y] += 1 + r;
-            }
-            // x: BETRAY   y: COOPERATE
-            else {
-                payoff[x] += 1 + r;
-            }
-        }
-    }
-
     
 };

@@ -1,9 +1,11 @@
 #include <iostream>
-#include "BA_network.hpp"
+#include "network_gambling.hpp"
 
 int main() {
-    __BA_network<int> a(10, 1);
+    network_gambling test;
 
-    std::cout << a.degree_of_network();   
-    
+    test.iterate();
+    test.iterate();
+    test.iterate();
+
 }
