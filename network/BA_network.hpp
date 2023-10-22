@@ -36,6 +36,7 @@ struct __BA_network : public __network__base<NodeDataType> {
                 this->connect(new_node_index, connected_node_index);
             }
         }
+        
     }
 
 };
