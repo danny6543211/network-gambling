@@ -5,7 +5,7 @@
 #include "BA_network.hpp"
 #include "behavior.hpp"
 #include "strategy.hpp"
-#include "game_type.hpp"
+#include "gaming_method.hpp"
 
 struct node_data {
     using ID = unsigned int;

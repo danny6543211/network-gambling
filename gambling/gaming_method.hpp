@@ -1,5 +1,5 @@
-#ifndef GAME_TYPE_HPP
-#define GAME_TYPE_HPP
+#ifndef GAMEING_METHOD_HPP
+#define GAMEING_METHOD_HPP
 
 #include "behavior.hpp"
 
