@@ -27,8 +27,8 @@ struct __network__base
     }
 
     void connect(ID x, ID y) {
-        nodes[x].neighbors.insert(y);
-        nodes[y].neighbors.insert(x);
+        nodes[x].neighbors.push_back(y);
+        nodes[y].neighbors.push_back(x);
         edges.push_back(edge(x, y));
     }   
 

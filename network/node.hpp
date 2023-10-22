@@ -1,14 +1,14 @@
 #ifndef NODE_HPP
 #define NODE_HPP
 
-#include <set>
+#include <vector>
 
 template<class NodeDataType>
 struct __node {
     using ID = unsigned int;
 
     ID id;
-    std::set<ID> neighbors;
+    std::vector<ID> neighbors;
     NodeDataType data;
 
     __node(ID id) : id(id) {}

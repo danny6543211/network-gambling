@@ -1,15 +1,15 @@
 #include <unordered_map>
 #include <memory>
+
 #include "rand.h"
 #include "BA_network.hpp"
-
-enum class strategy {BETRAY, COOPERATE, TFT};
-enum class behavior {BETRAY, COOPERATE};
-enum class game {snowdrift_game, prisoners_dilemma};
-strategy rand_strategy() { return (strategy) (get_rand_int() % 3); }
-behavior rand_behavior() { return (behavior) (get_rand_int() % 2); }
+#include "behavior.hpp"
+#include "strategy.hpp"
+#include "game_type.hpp"
 
 struct node_data {
+    using ID = unsigned int;
+    
     strategy strategy = strategy::COOPERATE;
     double payoff = 0;
     double this_tern_payoff = 0;
@@ -18,11 +18,12 @@ struct node_data {
 
 class gambling {
 public:
-    typedef __scale_free_network<node_data> scale_free_network;
+    typedef __BA_network<node_data> scale_free_network;
+    using ID = unsigned int;
 
     std::unique_ptr<scale_free_network> network;
 private:
-    game game_type = game::snowdrift_game;
+    gaming_method game_type = gaming_method::snowdrift_dilemma;
     size_t network_size = 100;
     size_t new_node_edge_count = 1;
     size_t one_iteration_caculate_count = 5;
@@ -82,9 +83,9 @@ private:
         network = std::make_unique<scale_free_network>(network_size, new_node_edge_count);
         for (auto &node : network->nodes) {
             // 网络初始化为对自己随机策略，对邻居随机印象
-            node.data.strategy = rand_strategy();
+            node.data.strategy = get_rand_strategy();
             for (size_t j = 0; j < node.neighbors.size(); j++) {
-                node.data.neighbors_impression[node.neighbors[j]] = rand_behavior();
+                node.data.neighbors_impression[node.neighbors[j]] = get_rand_behavior();
             }
         }
     }
@@ -121,9 +122,9 @@ private:
                 }
             }
 
-            if (game_type == game::snowdrift_game)
+            if (game_type == gaming_method::snowdrift_dilemma)
                 snowdrift_battle(x, x_behavior, y, y_behavior, this_tern_payoff, r);
-            else if (game_type == game::prisoners_dilemma)
+            else if (game_type == gaming_method::prisoners_dilemma)
                 prisoners_battle(x, x_behavior, y, y_behavior, this_tern_payoff, r);            
         }
     
@@ -141,7 +142,7 @@ private:
             std::vector<double> degrees_table;
             size_t neighbors_degrees_sum = 0;
             for (auto neighbor_ID : network->nodes[source_ID].neighbors) {
-                size_t neighbor_degrees = network->nodes[neighbor_ID].degrees();
+                size_t neighbor_degrees = network->nodes[neighbor_ID].degree();
                 degrees_table.push_back(neighbor_degrees);
                 neighbors_degrees_sum += neighbor_degrees;
             }
@@ -149,7 +150,7 @@ private:
             for (auto &i : degrees_table)
                 i /= (double) neighbors_degrees_sum;
 
-            double rand = get_rand();
+            double rand = get_rand_p();
             size_t target_neighbor_index = 0;
             for (auto degrees_p : degrees_table) {
                 rand -= degrees_p;
@@ -164,7 +165,7 @@ private:
 
             double p = 1 / (1 + exp((network->nodes[source_ID].data.this_tern_payoff 
             - network->nodes[target_ID].data.this_tern_payoff) / 0.01));
-            rand = get_rand();
+            rand = get_rand_p();
 
             if (p > rand)
                 this_tern_strategy[source_ID] = (int) network->nodes[target_ID].data.strategy;
@@ -179,7 +180,7 @@ private:
     }
 
     void battle(ID x, behavior x_behavior, ID y, behavior y_behavior, 
-    std::vector<double>& payoff, double r, game gambling_method) {
+    std::vector<double>& payoff, double r, gaming_method gambling_method) {
 
     }
 
