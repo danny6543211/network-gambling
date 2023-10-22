@@ -1,8 +1,7 @@
 #include <unordered_map>
 #include <memory>
 #include "rand.h"
-#include "network.h"
-
+#include "BA_network.hpp"
 
 enum class strategy {BETRAY, COOPERATE, TFT};
 enum class behavior {BETRAY, COOPERATE};
@@ -45,14 +44,14 @@ public:
 
     double payoff() {
         double sum = 0;
-        for (auto const &node : network->nodes)
+        for (auto &node : network->nodes)
             sum += node.data.payoff;
         return sum;
     }
 
     size_t C_count() {
         size_t sum = 0;
-        for (auto const &node : network->nodes) {
+        for (auto &node : network->nodes) {
             if (node.data.strategy == strategy::COOPERATE)
                 sum++;
         }
@@ -61,7 +60,7 @@ public:
 
     size_t B_count() {
         size_t sum = 0;
-        for (auto const &node : network->nodes) {
+        for (auto &node : network->nodes) {
             if (node.data.strategy == strategy::BETRAY)
                 sum++;
         }

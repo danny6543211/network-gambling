@@ -1,2 +1,4 @@
-g++ main.cpp -o main.exe
-main.exe
+cd build
+mingw32-make.exe
+network_gambling.exe
+cd ..
