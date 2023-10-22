@@ -4,8 +4,6 @@
 int main() {
     network_gambling test;
 
-    test.iterate();
-    test.iterate();
-    test.iterate();
+    std::cout << test.network->degree_of_network() << std::endl;
 
 }

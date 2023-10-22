@@ -21,9 +21,9 @@ public:
     using network_type = __BA_network<node_data>;
     using ID           = unsigned int;
     
-private:
     std::unique_ptr<network_type> network;
     
+private:
     gaming_method_type gaming_method    = gaming_method_type::snowdrift_dilemma;
     size_t network_size                 = 200;
     size_t new_node_edge_count          = 1;
