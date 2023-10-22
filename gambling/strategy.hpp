@@ -7,7 +7,7 @@ enum class strategy {
     BETRAY, COOPERATE, TFT
 };
 
-strategy get_rand_strategy() {
+inline strategy get_rand_strategy() {
     return (strategy) (get_rand_int() % 3);
 }
 

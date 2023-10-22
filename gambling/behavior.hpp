@@ -7,7 +7,7 @@ enum class behavior {
     BETRAY, COOPERATE
 };
 
-behavior get_rand_behavior() { 
+inline behavior get_rand_behavior() { 
     return (behavior) (get_rand_int() % 2); 
 }
 
