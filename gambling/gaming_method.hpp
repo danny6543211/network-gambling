@@ -3,11 +3,12 @@
 
 #include "behavior.hpp"
 
-enum class gaming_method_type {
-    snowdrift_dilemma, prisoners_dilemma
+namespace gaming_method {
+    struct snowdrift_dilemma {};
+    struct prisoners_dilemma {};
 };
 
-inline void snowdrift_dilemma(behavior x_behavior, behavior y_behavior, 
+inline void __snowdrift_dilemma(behavior x_behavior, behavior y_behavior, 
     double& x_payoff, double& y_payoff, double r) {
     
     if (x_behavior == y_behavior) {
@@ -30,7 +31,7 @@ inline void snowdrift_dilemma(behavior x_behavior, behavior y_behavior,
     }
 }
 
-inline void prisoners_dilemma(behavior x_behavior, behavior y_behavior, 
+inline void __prisoners_dilemma(behavior x_behavior, behavior y_behavior, 
     double& x_payoff, double& y_payoff, double r) {
     
     if (x_behavior == y_behavior) {
@@ -51,14 +52,20 @@ inline void prisoners_dilemma(behavior x_behavior, behavior y_behavior,
     }    
 }
 
-void battle(behavior x_behavior, behavior y_behavior, 
-    double& x_payoff, double& y_payoff, double r, gaming_method_type method) {
-        if (method == gaming_method_type::snowdrift_dilemma)
-            snowdrift_dilemma(x_behavior, y_behavior, x_payoff, y_payoff, r);
-        else if (method == gaming_method_type::prisoners_dilemma)
-            prisoners_dilemma(x_behavior, y_behavior, x_payoff, y_payoff, r);
-        else
-            throw "Method is not impletment";
-    }
+inline void __battle(behavior x_behavior, behavior y_behavior, 
+    double& x_payoff, double& y_payoff, double r, gaming_method::snowdrift_dilemma) {
+        __snowdrift_dilemma(x_behavior, y_behavior, x_payoff, y_payoff, r);
+}
+
+inline void __battle(behavior x_behavior, behavior y_behavior, 
+    double& x_payoff, double& y_payoff, double r, gaming_method::prisoners_dilemma) {
+        __prisoners_dilemma(x_behavior, y_behavior, x_payoff, y_payoff, r);
+}
+
+template<class GamingMethodType>
+inline void battle(behavior x_behavior, behavior y_behavior, 
+    double& x_payoff, double& y_payoff, double r, GamingMethodType) {
+        __battle(x_behavior, y_behavior, x_payoff, y_payoff, r, GamingMethodType());
+}
 
 #endif

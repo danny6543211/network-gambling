@@ -7,10 +7,12 @@
 #include "gaming_method.hpp"
 #include "rand.hpp"
 
+
 struct node_data {
-    using ID = unsigned int;
-    
-    strategy strategy = strategy::COOPERATE;
+    using ID            = unsigned int;
+    using strategy_type = strategy::TFT_strategy_type;
+
+    strategy_type strategy = strategy_type::COOPERATE;
     double payoff = 0;
     double this_tern_payoff = 0;
     std::unordered_map<ID, behavior> neighbors_impression;
@@ -18,14 +20,16 @@ struct node_data {
 
 class network_gambling {
 public:
-    using network_type = __BA_network<node_data>;
-    using ID           = unsigned int;
+    using ID                  = unsigned int;
+    using strategy_type       = strategy::TFT_strategy_type;
+    using network_type        = network::BA_network<node_data>;
+    using gaming_method_type  = gaming_method::prisoners_dilemma;
     
     std::unique_ptr<network_type> network;
     
 private:
-    gaming_method_type gaming_method    = gaming_method_type::snowdrift_dilemma;
-    size_t network_size                 = 200;
+
+    size_t network_size                 = 100;
     size_t new_node_edge_count          = 1;
     size_t one_iteration_caculate_count = 5;
     double r = 0; 
@@ -35,10 +39,13 @@ public:
         build_network();
     }
 
-    network_gambling(gaming_method_type gaming_method, size_t network_size, 
-    size_t new_node_edge_count, size_t one_iteration_caculate_count, double r) 
+    network_gambling(double r) : r(r) {
+        build_network();
+    }
+
+    network_gambling(size_t network_size, size_t new_node_edge_count, 
+    size_t one_iteration_caculate_count, double r) 
     : 
-    gaming_method(gaming_method), 
     network_size(network_size), 
     new_node_edge_count(new_node_edge_count), 
     one_iteration_caculate_count(one_iteration_caculate_count), 
@@ -52,12 +59,39 @@ public:
         optimize();
     }
 
+    void set_r(double r) {
+        this->r = r;
+    }
+
+    void rebuild() {
+        network = nullptr;
+        build_network();
+    }
+
+    size_t get_Betray_count() {
+        size_t sum = 0;
+        for (auto const &node : network->nodes) {
+            if (node.data.strategy == strategy_type::BETRAY)
+                sum++;
+        }
+        return sum;
+    }
+
+    size_t get_Cooperate_count() {
+        size_t sum = 0;
+        for (auto const &node : network->nodes) {
+            if (node.data.strategy == strategy_type::COOPERATE)
+                sum++;
+        }
+        return sum;
+    }
+
 private:
     void build_network() {
         network = std::make_unique<network_type>(network_size, new_node_edge_count);
         for (auto &node : network->nodes) {
             // 网络初始化为对自己随机策略，对邻居随机印象
-            node.data.strategy = get_rand_strategy();
+            node.data.strategy = get_rand_strategy(strategy_type());
             for (auto &neighbor : node.neighbors) 
                 node.data.neighbors_impression[neighbor] = get_rand_behavior();
         }
@@ -72,20 +106,20 @@ private:
             behavior y_behavior;
             
             // two TFT
-            if (network->nodes[x].data.strategy == strategy::TFT 
-            && network->nodes[y].data.strategy == strategy::TFT) {
+            if (network->nodes[x].data.strategy == strategy_type::TFT 
+            && network->nodes[y].data.strategy == strategy_type::TFT) {
                 x_behavior = network->nodes[x].data.neighbors_impression[y];
                 y_behavior = network->nodes[y].data.neighbors_impression[x];
             }
             // no TFT
-            else if (network->nodes[x].data.strategy != strategy::TFT 
-            && network->nodes[y].data.strategy != strategy::TFT) {
+            else if (network->nodes[x].data.strategy != strategy_type::TFT 
+            && network->nodes[y].data.strategy != strategy_type::TFT) {
                 x_behavior = (behavior) network->nodes[x].data.strategy;
                 y_behavior = (behavior) network->nodes[y].data.strategy;
             }
             // one TFT
             else {
-                if (network->nodes[x].data.strategy == strategy::TFT) {
+                if (network->nodes[x].data.strategy == strategy_type::TFT) {
                     x_behavior = network->nodes[x].data.neighbors_impression[y];
                     y_behavior = (behavior) network->nodes[y].data.strategy;
                 }
@@ -95,7 +129,8 @@ private:
                 }
             }
 
-            battle(x_behavior, y_behavior, this_tern_payoff[x], this_tern_payoff[y], r, gaming_method);
+            battle(x_behavior, y_behavior, this_tern_payoff[x], 
+            this_tern_payoff[y], r, gaming_method_type());
         }
     
         // 更新收益
@@ -145,7 +180,7 @@ private:
         for (size_t i = 0; i < this_tern_strategy.size(); i++) {
             if (this_tern_strategy[i] == -1)
                 continue;
-            network->nodes[i].data.strategy = (strategy) this_tern_strategy[i];
+            network->nodes[i].data.strategy = (strategy_type) this_tern_strategy[i];
         }
         // 本回收益归零
         for (auto &node : network->nodes) 

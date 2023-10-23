@@ -12,5 +12,4 @@ inline behavior get_rand_behavior() {
 }
 
 
-
 #endif

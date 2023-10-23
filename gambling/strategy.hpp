@@ -3,12 +3,25 @@
 
 #include "rand.hpp"
 
-enum class strategy {
+namespace strategy {
+
+enum class dafault_strategy_type {
+    BETRAY, COOPERATE
+};
+
+enum class TFT_strategy_type {
     BETRAY, COOPERATE, TFT
 };
 
-inline strategy get_rand_strategy() {
-    return (strategy) (get_rand_int() % 3);
+
+inline strategy::dafault_strategy_type get_rand_strategy(strategy::dafault_strategy_type) {
+    return (strategy::dafault_strategy_type) (get_rand_int() % 2);
 }
+
+inline strategy::TFT_strategy_type get_rand_strategy(strategy::TFT_strategy_type) {
+    return (strategy::TFT_strategy_type) (get_rand_int() % 3);
+}
+
+};
 
 #endif
