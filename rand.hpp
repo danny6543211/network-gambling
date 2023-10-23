@@ -1,5 +1,5 @@
-#ifndef RAND_H
-#define RAND_H
+#ifndef RAND_HPP
+#define RAND_HPP
 
 #include <random>
 #include <ctime>
@@ -9,7 +9,7 @@
 std::mt19937 mt(time(NULL));  
 std::uniform_int_distribution<int> dist(0, RAND_TOP); 
 
-inline size_t get_rand_int() {
+inline int get_rand_int() {
     return dist(mt);
 }
 
