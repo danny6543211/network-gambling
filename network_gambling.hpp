@@ -140,7 +140,7 @@ private:
                 }
             }
 
-            battle(x_behavior, y_behavior, this_tern_payoff[x], 
+            gambling::battle(x_behavior, y_behavior, this_tern_payoff[x], 
             this_tern_payoff[y], r, gambling_type);
         }
         // 更新收益

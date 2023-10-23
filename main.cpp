@@ -10,9 +10,7 @@ int main() {
         test.iterate();
     }
 
-    std::cout << test.number_of_cooperation() << " ";
     std::cout << test.number_of_defection() << " ";
+    std::cout << test.number_of_cooperation() << " ";
     std::cout << test.number_of_TFT() << " ";
-
-
 }
