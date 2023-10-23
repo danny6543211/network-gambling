@@ -4,6 +4,7 @@
 
 #include <unordered_map>
 #include <memory>
+#include <string>
 #include "network.hpp"
 #include "gambling.hpp"
 #include "rand.hpp"
@@ -32,10 +33,12 @@ public:
 
 private:
     gambling_method gambling_type        = gambling_method::prisoners_dilemma;   
-    size_t network_size                  = 200;
+    size_t network_size                  = 1000;
     size_t new_node_edge_count           = 1;
-    size_t one_iteration_caculate_count  = 1;
+    size_t one_iteration_caculate_count  = 5;
     double r                             = 0; 
+
+    std::unordered_map<std::string, unsigned int> this_tern_behavior;
 
 public:
     network_gambling() { build_network(); }
@@ -51,13 +54,7 @@ public:
         build_network();
     }
 
-    void iterate() {
-        for (size_t i = 0; i < one_iteration_caculate_count; i++)
-            caculate();
-        optimize();
-    }
-
-    size_t number_of_defection () {
+    size_t number_of_D_strategy () {
         size_t sum = 0;
         for (auto const &node : network->nodes) {
             if (node.data.strategy == strategy::DEFECTION)
@@ -66,7 +63,7 @@ public:
         return sum;
     }
 
-    size_t number_of_cooperation() {
+    size_t number_of_C_strategy() {
         size_t sum = 0;
         for (auto const &node : network->nodes) {
             if (node.data.strategy == strategy::COOPERATION)
@@ -75,7 +72,7 @@ public:
         return sum;
     }
 
-    size_t number_of_TFT() {
+    size_t number_of_TFT_strategy() {
         size_t sum = 0;
         for (auto const &node : network->nodes) {
             if (node.data.strategy == strategy::TFT)
@@ -83,33 +80,28 @@ public:
         }
         return sum;
     }
-    
 
-private:
-   void build_network() {
-        network = std::make_unique<network_type>(network_size, new_node_edge_count);
-        for (auto &node : network->nodes) {
-            // 网络初始化为随机策略
-            node.data.strategy = gambling::get_rand_strategy();
-        }
-        // TFT初始化
-        for (auto &node : network->nodes) {
-            if (node.data.strategy == strategy::TFT) {
-                for (auto const &neighbor : node.neighbors) {
-                    if (network->nodes[neighbor].data.strategy == strategy::TFT) 
-                        node.data.neighbors_impression[neighbor] = gambling::get_rand_behavior();
-                    else {
-                        node.data.neighbors_impression[neighbor] 
-                        = (behavior) network->nodes[neighbor].data.strategy;
-                    }
-                }
-            }
-        }
+    size_t number_of_C_behavior() { return this_tern_behavior["C"]; }
+    size_t number_of_D_behavior() { return this_tern_behavior["D"]; }
+    size_t number_of_CC_battle() { return this_tern_behavior["CC"]; }
+    size_t number_of_CD_battle() { return this_tern_behavior["CD"]; }
+    size_t number_of_DD_battle() { return this_tern_behavior["DD"]; }
 
+    void iterate() {
+        for (size_t i = 0; i < one_iteration_caculate_count; i++)
+            caculate();
+        optimize();
     }
 
     void caculate() {
+        this_tern_behavior.clear();
+        this_tern_behavior["C"] = 0;
+        this_tern_behavior["D"] = 0;
+        this_tern_behavior["CC"] = 0;
+        this_tern_behavior["CD"] = 0;
+        this_tern_behavior["DD"] = 0;
         std::vector<double> this_tern_payoff(network->nodes.size(), 0);
+
         for (auto const &edge : network->edges) {
             ID x = edge.source;
             ID y = edge.target;
@@ -138,6 +130,22 @@ private:
                     x_behavior = (behavior) network->nodes[x].data.strategy;
                     y_behavior = network->nodes[y].data.neighbors_impression[x];
                 }
+            }
+            
+            if (x_behavior == y_behavior) {
+                if (x_behavior == gambling::behavior::COOPERATE) {
+                    this_tern_behavior["C"] += 2;
+                    this_tern_behavior["CC"] ++;
+                }
+                else {
+                    this_tern_behavior["D"] += 2;
+                    this_tern_behavior["DD"] ++; 
+                }
+            }
+            else {
+                this_tern_behavior["C"]++;
+                this_tern_behavior["D"]++;
+                this_tern_behavior["CD"]++;
             }
 
             gambling::battle(x_behavior, y_behavior, this_tern_payoff[x], 
@@ -180,6 +188,29 @@ private:
         // 本回收益归零
         for (auto &node : network->nodes) 
             node.data.this_tern_payoff = 0;       
+    }
+
+private: 
+   void build_network() {
+        network = std::make_unique<network_type>(network_size, new_node_edge_count);
+        for (auto &node : network->nodes) {
+            // 网络初始化为随机策略
+            node.data.strategy = gambling::get_rand_strategy();
+        }
+        // TFT初始化
+        for (auto &node : network->nodes) {
+            if (node.data.strategy == strategy::TFT) {
+                for (auto const &neighbor : node.neighbors) {
+                    if (network->nodes[neighbor].data.strategy == strategy::TFT) 
+                        node.data.neighbors_impression[neighbor] = gambling::get_rand_behavior();
+                    else {
+                        node.data.neighbors_impression[neighbor] 
+                        = (behavior) network->nodes[neighbor].data.strategy;
+                    }
+                }
+            }
+        }
+
     }
 
 };

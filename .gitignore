@@ -6,3 +6,5 @@ data
 build
 data.csv
 run.bat
+battle_behavior.csv
+strategy.csv
