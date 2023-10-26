@@ -1,0 +1,3 @@
+D:\ProgramFiles\cmake\bin\cmake.exe -E rm -f CMakeFiles\NG.dir/objects.a
+D:\ProgramFiles\mingw\bin\ar.exe qc CMakeFiles\NG.dir/objects.a @CMakeFiles\NG.dir\objects1.rsp
+D:\ProgramFiles\mingw\bin\g++.exe -g -Wl,--whole-archive CMakeFiles\NG.dir/objects.a -Wl,--no-whole-archive -o NG.exe -Wl,--out-implib,libNG.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\NG.dir\linkLibs.rsp
