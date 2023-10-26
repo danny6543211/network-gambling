@@ -1,3 +1,0 @@
-C:/Users/Danny/Desktop/NetworkGambling/build/CMakeFiles/NG.dir
-C:/Users/Danny/Desktop/NetworkGambling/build/CMakeFiles/edit_cache.dir
-C:/Users/Danny/Desktop/NetworkGambling/build/CMakeFiles/rebuild_cache.dir
