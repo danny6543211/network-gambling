@@ -1,8 +1,0 @@
-[
-{
-  "directory": "C:/Users/Danny/Desktop/NetworkGambling/build",
-  "command": "D:\\ProgramFiles\\mingw\\bin\\g++.exe  @CMakeFiles/NG.dir/includes_CXX.rsp -g -o CMakeFiles\\NG.dir\\main.cpp.obj -c C:\\Users\\Danny\\Desktop\\NetworkGambling\\main.cpp",
-  "file": "C:/Users/Danny/Desktop/NetworkGambling/main.cpp",
-  "output": "CMakeFiles/NG.dir/main.cpp.obj"
-}
-]
