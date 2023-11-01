@@ -1,12 +1,35 @@
-#pragma once 
+#ifndef NETWORK_BASE
+#define NETWORK_BASE
 
+#include <memory>
 #include <vector>
-#include "Node.hpp"
-#include "Edge.hpp"
 
 namespace ngl {
 
-template<class NodeDataType>
+using ID = unsigned int;
+
+struct NodeBase {
+    NodeBase(ID id) : id(id) {}
+    size_t degree() const { return neighbors.size(); }
+
+    ID id;
+    std::vector<ID> neighbors;
+};
+
+template<typename NodeDataType>
+struct Node : public NodeBase {
+    Node(ID id) : NodeBase(id) {}
+    NodeDataType data;
+};
+
+struct Edge {
+    Edge(ID source, ID target) : source(source), target(target) {}
+    
+    ID source;
+    ID target;
+};
+
+template<typename NodeDataType>
 struct NetworkBase {
     using Node = Node<NodeDataType>;
 
@@ -26,6 +49,8 @@ struct NetworkBase {
         return edges.size();
     }
 
+    virtual void build(size_t arg1, size_t arg2) = 0;
+protected:
     void addNode() {
         nodes.push_back(Node(nodes.size()));
     }
@@ -40,10 +65,17 @@ struct NetworkBase {
             sum += node.degree();
         return sum;
     }
-// private:
+    
+    void ShrinkToFit() {
+        this->nodes.shrink_to_fit();
+        this->edges.shrink_to_fit();
+    }
+
+private:
     std::vector<Node> nodes;
     std::vector<Edge> edges;
 };
 
-
 }   /* End of namespace ngl */
+
+#endif

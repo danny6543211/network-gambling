@@ -1,4 +1,5 @@
-#pragma once
+#ifndef RANDOM_GENERATOR
+#define RANDOM_GENERATOR
 
 #include <random>
 #include <ctime>
@@ -34,3 +35,5 @@ std::uniform_real_distribution<double> RandomGenerator::real_dist(0.0, 1.0);
 
     
 }   /* End of namespace ngl */
+
+#endif

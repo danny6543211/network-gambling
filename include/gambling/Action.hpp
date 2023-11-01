@@ -1,4 +1,5 @@
-#pragma once 
+#ifndef ACTION
+#define ACTION
 
 #include "RandomGenerator.hpp"
 
@@ -13,3 +14,5 @@ Action randomAction() {
 }
 
 }   /* End of namespace ngl */
+
+#endif
