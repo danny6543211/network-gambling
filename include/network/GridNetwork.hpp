@@ -45,6 +45,12 @@ private:
         (*this)[y].neighbors.push_back(x);
     }
 };
+
+namespace nw {
+
+struct Grid {};
+
+}
     
 }   /* End of  namespace ngl */
 

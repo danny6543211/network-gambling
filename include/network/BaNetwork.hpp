@@ -48,6 +48,11 @@ private:
     }
 };
 
+namespace nw {
+
+struct BA {};
+
+}
 
 
 }   /* End of namespace ngl */

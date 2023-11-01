@@ -1,9 +1,11 @@
 #ifndef NG_HPP
 #define NG_HPP
 
+#include <vector>
 #include <memory>
 #include "NetworkBase.hpp"
 #include "Network.hpp"
+#include "Caculate.hpp"
 
 #include "StrategyGroup.hpp"
 #include "GameMethod.hpp"
@@ -22,7 +24,7 @@ public:
     }
 
     void caculate() {
-
+        _caculate(*network, this_tern_payoff, r, GameMethod());
     }
 
     void optimize() {
@@ -45,8 +47,10 @@ public:
         return (*network)(i);
     }
 
-private:
+// private:
+    double r = 0;
     std::unique_ptr<NetworkBase<NodeDataType>> network;
+    std::vector<double> this_tern_payoff;
 };
 
 }   /* End of namespace ngl */

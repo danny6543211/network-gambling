@@ -10,13 +10,6 @@
 
 namespace ngl {
 
-namespace nw {
-
-struct BA {};
-struct Grid {};
-
-}
-
 using namespace nw; 
 
 template<typename StrategyGroup>
