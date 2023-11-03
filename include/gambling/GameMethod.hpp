@@ -21,10 +21,8 @@ struct PrisonersDilemma {
         else {
             if (xAction == Action::Defect) {
                 xPayoff += 1 + r;
-                yPayoff += 1 - r;
             }
             else {
-                xPayoff += 1 - r;
                 yPayoff += 1 + r;
             }
         }

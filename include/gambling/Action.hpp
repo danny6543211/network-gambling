@@ -6,7 +6,7 @@
 namespace ngl {
 
 enum class Action {
-    Cooperate, Defect
+    Defect, Cooperate
 };
 
 Action randomAction() {

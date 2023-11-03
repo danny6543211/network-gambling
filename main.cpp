@@ -4,14 +4,16 @@
 using namespace ngl;
 
 int main() {
-    NG<nw::Grid,sg::ClassicStrategyGroup,gm::PrisonersDilemma> test(3 ,3);
+    NG<nw::Grid,sg::ClassicStrategyGroup,gm::PrisonersDilemma> test(100 ,100, 0.1);
 
-    for (size_t i = 0; i < 10; i++) {
+    for (size_t i = 0; i < 100; i++) {
         test.caculate();
-        for (size_t i = 0; i < test.networkSize(); i++) {
-            std::cout << (int) test.this_tern_payoff[i] << " ";
-        }
-        std::cout << "\n";
-    }
+        test.optimize();
+        // auto action = test.getAction();
 
+        // std::cout << "C: " << action["C"] << " ";
+        // std::cout << "D: " << action["D"] << " ";
+        // std::cout << "\n";
+    }
+    
 }
